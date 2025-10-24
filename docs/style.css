@@ -10,6 +10,10 @@ body {
     box-sizing: border-box;
 }
 
+body.modal-open {
+    overflow: hidden;
+}
+
 .main-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -70,8 +74,89 @@ body {
     font-weight: 700;
     color: #2c3e50;
     text-align: center;
-    margin: 15px 0 40px 0;
+    margin: 15px 0 25px 0; /* 调整了下边距 */
 }
+.clickable-summary {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease-in-out;
+}
+.clickable-summary:hover {
+    color: #007bff;
+}
+
+/* ========== 修改后的收益率展示样式 ========== */
+.returns-container {
+    display: flex;
+    justify-content: center;
+    align-items: stretch; /* 让卡片等高 */
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 0 0 40px 0;
+    padding: 0 20px;
+}
+
+.return-item {
+    text-align: center;
+    padding: 12px 16px;
+    background-color: #f7f9fa;
+    border-radius: 8px;
+    border: 1px solid #e1e4e8;
+    min-width: 160px; /* 适当加宽以容纳新内容 */
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.return-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.return-label {
+    display: block;
+    font-size: 14px;
+    color: #586069;
+    margin-bottom: 6px;
+}
+
+.return-value {
+    display: block;
+    font-size: 22px; /* 突出显示收益率 */
+    font-weight: 600;
+    margin-bottom: 8px; /* 与下方详情留出间距 */
+}
+
+/* 新增：盈利和增值行的样式 */
+.detail-line {
+    display: flex;
+    justify-content: space-between; /* 标签和数值左右对齐 */
+    align-items: center;
+    font-size: 14px;
+    width: 100%;
+    margin-top: 4px;
+}
+
+.detail-label {
+    color: #3a3f44; /* 标签文字颜色 */
+}
+
+.detail-value {
+    font-weight: 500;
+}
+
+/* 核心修改：定义红正绿负的颜色 */
+.positive {
+    color: #d73a49; /* 红色代表正值 */
+}
+
+.negative {
+    color: #28a745; /* 绿色代表负值 */
+}
+/* ========================================== */
+
+
 .charts-container {
     text-align: center;
 }
@@ -94,7 +179,16 @@ body {
     padding-top: 20px;
     border-top: 1px solid #e1e4e8;
     color: #6a737d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
 }
+.summary-footer p {
+    margin: 0;
+}
+
 
 /* --- 编辑器面板 --- */
 .editor-actions {
@@ -193,41 +287,105 @@ input.invalid { border-color: red !important; background-color: #fff0f0 !importa
     .content-area { padding: 20px; }
     .charts-container img { max-width: 100%; }
     .portfolio-item, .option-item-row { flex-wrap: wrap; }
+    .returns-container { gap: 10px; } /* 移动端减小间距 */
+    .return-item { min-width: 100px; }
 }
 
-/* ========== 全局操作按钮统一样式 (已整合) ========== */
+/* --- 全局操作按钮统一样式 --- */
 .action-btn {
-    background-color: #007bff; /* 主操作色：蓝色 */
+    background-color: #007bff;
     color: white;
     border: none;
-    padding: 10px 20px; /* 统一使用大尺寸内边距 */
-    border-radius: 6px; /* 统一使用大尺寸圆角 */
+    padding: 10px 20px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 16px; /* 统一使用大号字体 */
+    font-size: 16px;
     font-family: 'Noto Sans SC', sans-serif;
     transition: background-color 0.3s ease;
-    margin: 0; /* 移除外边距，由父容器 .summary-footer 或 .editor-actions 的 gap 控制间距 */
+    margin: 0;
     line-height: 1.5;
 }
-
 .action-btn:hover {
-    background-color: #0056b3; /* 蓝色按钮的悬停效果 */
+    background-color: #0056b3;
 }
-
-/* 为“保存”按钮单独设置颜色 */
 #save-btn-positions,
 #save-btn-settings {
-    background-color: #28a745; /* 保存操作色：绿色 */
+    background-color: #28a745;
 }
-
 #save-btn-positions:hover,
 #save-btn-settings:hover {
-    background-color: #218838; /* 绿色按钮的悬停效果 */
+    background-color: #218838;
 }
-
 .logout-btn {
-    background-color: #6c757d; /* 一个中性的灰色 */
+    background-color: #6c757d;
 }
 .logout-btn:hover {
-    background-color: #5a6268; /* 悬停时颜色变深 */
+    background-color: #5a6268;
+}
+
+/* --- 历史表格弹窗样式 --- */
+.modal-backdrop-new {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(36, 41, 46, 0.7);
+    z-index: 199;
+    opacity: 0; /* 默认透明 */
+    transition: opacity 0.3s ease;
+}
+
+#history-modal-container {
+    position: fixed;
+    top: 50%; left: 50%;
+    width: 90%;
+    max-width: 1000px;
+    height: 80vh;
+    max-height: 700px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    opacity: 0; /* 默认透明 */
+    transform: translate(-50%, -50%) scale(0.95); /* 默认缩小 */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.modal-backdrop-new.is-active,
+#history-modal-container.is-active {
+    opacity: 1;
+}
+#history-modal-container.is-active {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#history-table-content {
+    padding: 25px;
+    overflow-y: auto; /* 内容超出时可滚动 */
+    flex-grow: 1;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+.history-table th, .history-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e1e4e8;
+}
+.history-table th {
+    background-color: #f7f9fa;
+    font-weight: 600;
+    position: sticky; /* 表头固定 */
+    top: -25px; /* 补偿父容器的 padding */
+    z-index: 1;
+}
+.history-table tbody tr:nth-child(even) {
+    background-color: #f7f9fa;
+}
+.history-table tbody tr:hover {
+    background-color: #f1f3f5;
 }

@@ -1,7 +1,7 @@
 // --- 全局常量与变量 ---
-const WORKFLOW_FILE_NAME = 'main.yml';
+const WORKFLOW_FILE_NAME = 'run_script.yml';
 const CONFIG_FILE_PATH = 'config.ini';
-const TOKEN_STORAGE_KEY = 'github_pat'; // === 新增: 用于 localStorage 的键名 ===
+const TOKEN_STORAGE_KEY = 'github_pat';
 let fileSha = null;
 let token = '';
 let originalIniLines = [];
@@ -34,14 +34,21 @@ const modal = {
     confirmBtn: document.getElementById('modal-confirm-btn'),
     cancelBtn: document.getElementById('modal-cancel-btn'),
 };
-// === 新增: 获取所有退出登录按钮 ===
 const logoutButtons = document.querySelectorAll('.logout-btn');
+
+const historyModal = {
+    backdrop: document.getElementById('history-modal-backdrop'),
+    container: document.getElementById('history-modal-container'),
+    content: document.getElementById('history-table-content')
+};
+const totalValueDisplay = document.getElementById('total-value-display');
+const returnsDisplayContainer = document.getElementById('returns-display'); // <-- 新增
 
 // --- 初始化与事件监听 ---
 document.addEventListener('DOMContentLoaded', () => {
     loadInitialSummary();
     setupEventListeners();
-    initializeAuth(); // === 修改: 页面加载时尝试自动登录 ===
+    initializeAuth();
 });
 
 function setupEventListeners() {
@@ -59,35 +66,105 @@ function setupEventListeners() {
     document.getElementById('save-btn-positions').addEventListener('click', savePortfolio);
     document.getElementById('save-btn-settings').addEventListener('click', savePortfolio);
     document.getElementById('force-refresh-btn').addEventListener('click', forceRefreshPage);
-
-    // === 新增: 为所有退出按钮添加事件监听 ===
     logoutButtons.forEach(btn => btn.addEventListener('click', handleLogout));
+
+    // 历史表格弹窗的事件监听
+    totalValueDisplay.addEventListener('click', showHistoryTable);
+    historyModal.backdrop.addEventListener('click', hideHistoryTable);
 }
 
-// === 新增: 页面加载时，检查并使用已保存的 Token ===
+
+async function showHistoryTable() {
+    document.body.classList.add('modal-open');
+    historyModal.backdrop.classList.remove('hidden');
+    historyModal.container.classList.remove('hidden');
+
+    requestAnimationFrame(() => {
+        historyModal.backdrop.classList.add('is-active');
+        historyModal.container.classList.add('is-active');
+    });
+
+    historyModal.content.innerHTML = '<p style="text-align:center; padding: 20px;">正在加载历史数据...</p>';
+    try {
+        const csvUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/portfolio_details_history.csv`;
+        const timestamp = new Date().getTime();
+        const response = await fetch(`${csvUrl}?t=${timestamp}`);
+
+        if (!response.ok) {
+            throw new Error(`无法加载 CSV 文件 (状态: ${response.status})`);
+        }
+
+        const csvText = await response.text();
+        const tableHtml = parseCsvToHtmlTable(csvText);
+        historyModal.content.innerHTML = tableHtml;
+
+    } catch (error) {
+        console.error('加载历史数据失败:', error);
+        historyModal.content.innerHTML = `<div class="status-error" style="display:block; margin: 20px;">加载失败: ${error.message}</div>`;
+    }
+}
+
+function hideHistoryTable() {
+    document.body.classList.remove('modal-open');
+    historyModal.container.addEventListener('transitionend', () => {
+        historyModal.backdrop.classList.add('hidden');
+        historyModal.container.classList.add('hidden');
+    }, { once: true });
+    historyModal.backdrop.classList.remove('is-active');
+    historyModal.container.classList.remove('is-active');
+}
+
+function parseCsvToHtmlTable(csvText) {
+    const lines = csvText.trim().split('\n');
+    if (lines.length === 0) return '<p>没有历史数据。</p>';
+
+    let html = '<table class="history-table">';
+    const headers = lines[0].split(',');
+    html += '<thead><tr>';
+    headers.forEach(header => {
+        html += `<th>${header.trim().replace(/_/g, ' ')}</th>`;
+    });
+    html += '</tr></thead>';
+
+    html += '<tbody>';
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i]) continue;
+        const cells = lines[i].split(',');
+        html += '<tr>';
+        cells.forEach(cell => {
+            const trimmedCell = cell.trim();
+            const num = Number(trimmedCell);
+            if (!isNaN(num) && trimmedCell.includes('.')) {
+                html += `<td>${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>`;
+            } else {
+                html += `<td>${trimmedCell}</td>`;
+            }
+        });
+        html += '</tr>';
+    }
+    html += '</tbody></table>';
+    return html;
+}
+
 function initializeAuth() {
     const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (storedToken) {
         console.log("检测到已保存的 Token，正在尝试自动登录...");
-        // 直接使用存储的token加载数据，但不显示模态框
         loadDataWithToken(storedToken, true);
     } else {
         console.log("未找到已保存的 Token。");
     }
 }
 
-// === 新增: 处理退出登录的逻辑 ===
 function handleLogout() {
     if (confirm('您确定要清除授权并退出登录吗？这会移除保存在本浏览器的 Token。')) {
         localStorage.removeItem(TOKEN_STORAGE_KEY);
         token = '';
         fileSha = null;
-        // 简单地刷新页面，回到初始状态
         window.location.reload();
     }
 }
 
-// === 新增: 更新UI的登录状态 ===
 function setLoggedInUI(isLoggedIn) {
     if (isLoggedIn) {
         logoutButtons.forEach(btn => btn.classList.remove('hidden'));
@@ -96,7 +173,6 @@ function setLoggedInUI(isLoggedIn) {
     }
 }
 
-// --- Tab 与弹窗管理 ---
 function switchTab(tabKey) {
     Object.values(tabButtons).forEach(btn => btn.classList.remove('active'));
     Object.values(panels).forEach(panel => panel.classList.remove('active'));
@@ -127,7 +203,6 @@ function hideTokenModal() {
     pendingTabSwitch = null;
 }
 
-// --- 核心逻辑：授权、加载、保存、运行 ---
 const { owner, repo } = getRepoInfoFromURL();
 
 async function handleTokenConfirm() {
@@ -140,7 +215,6 @@ async function handleTokenConfirm() {
     loadDataWithToken(inputToken);
 }
 
-// === 重构: 将加载数据的逻辑提取出来 ===
 async function loadDataWithToken(tokenToValidate, isAutoAuth = false) {
     try {
         const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${CONFIG_FILE_PATH}`, {
@@ -148,22 +222,20 @@ async function loadDataWithToken(tokenToValidate, isAutoAuth = false) {
         });
 
         if (!response.ok) {
-            // 如果自动授权失败，清除无效的token
             if (isAutoAuth) {
                 localStorage.removeItem(TOKEN_STORAGE_KEY);
                 console.error('自动登录失败: 已保存的 Token 无效或已过期，已自动清除。');
-                setLoggedInUI(false); // 确保退出按钮是隐藏的
-                return; // 静默失败，不打扰用户
+                setLoggedInUI(false);
+                return;
             }
             if (response.status === 401) throw new Error('Token 无效或权限不足。');
             if (response.status === 404) throw new Error('在仓库中未找到 config.ini 文件。');
             throw new Error(`GitHub API 错误: ${response.statusText}`);
         }
 
-        // === 修改: 验证成功后，保存 Token 到全局变量和 localStorage ===
         token = tokenToValidate;
         localStorage.setItem(TOKEN_STORAGE_KEY, token);
-        setLoggedInUI(true); // 显示退出登录按钮
+        setLoggedInUI(true);
 
         const data = await response.json();
         fileSha = data.sha;
@@ -186,7 +258,7 @@ async function loadDataWithToken(tokenToValidate, isAutoAuth = false) {
         if (!isAutoAuth) {
             showTokenModal(`验证失败: ${error.message}`, true);
         }
-        setLoggedInUI(false); // 确保退出按钮是隐藏的
+        setLoggedInUI(false);
     }
 }
 
@@ -244,7 +316,6 @@ async function runWorkflow() {
     }
 }
 
-// --- UI 渲染与数据处理 (这部分函数保持不变) ---
 function displayPortfolio(lines) {
     editors.positions.innerHTML = '';
     editors.settings.innerHTML = '';
@@ -351,12 +422,106 @@ function getRepoInfoFromURL() {
     return { owner: 'YOUR_USERNAME', repo: 'YOUR_REPONAME' };
 }
 
+// ========== 主要修改: 拆分出加载收益率的函数 ==========
+
+/**
+ * 异步获取并展示投资回报率、盈利和增值数据
+ */
+async function loadReturnsData() {
+    const returnsUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/portfolio_return.json`;
+    const timestamp = new Date().getTime();
+
+    returnsDisplayContainer.innerHTML = '<p style="font-size: 14px; color: #6a737d;">正在加载收益率...</p>';
+
+    try {
+        const response = await fetch(`${returnsUrl}?t=${timestamp}`);
+        if (!response.ok) {
+            throw new Error(`无法加载收益率文件 (状态: ${response.status})`);
+        }
+        const returnsData = await response.json();
+
+        if (!Array.isArray(returnsData) || returnsData.length === 0) {
+            returnsDisplayContainer.innerHTML = '<p style="font-size: 14px; color: #6a737d;">暂无收益率数据。</p>';
+            return;
+        }
+
+        returnsDisplayContainer.innerHTML = ''; // 清空加载提示
+
+        returnsData.forEach(item => {
+            const { period, return: returnValue, profit, growth } = item;
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'return-item';
+
+            // --- 周期标签 (例如 "本周至今") ---
+            const periodLabel = document.createElement('span');
+            periodLabel.className = 'return-label';
+            periodLabel.textContent = period;
+            itemDiv.appendChild(periodLabel);
+
+            // --- 创建带颜色数值的辅助函数 ---
+            const createValueSpan = (value, isPercent) => {
+                const span = document.createElement('span');
+                const sign = value > 0 ? '+' : '';
+                let text;
+                if (isPercent) {
+                    text = `${sign}${(value * 100).toFixed(2)}%`;
+                } else {
+                    text = `${sign}${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                }
+                span.textContent = text;
+
+                // 添加颜色类
+                if (value > 0) {
+                    span.classList.add('positive');
+                } else if (value < 0) {
+                    span.classList.add('negative');
+                }
+                return span;
+            };
+
+            // --- 1. 收益率 (Return) ---
+            const returnValueSpan = createValueSpan(returnValue, true);
+            returnValueSpan.classList.add('return-value'); // 使用这个类来定义大号字体
+            itemDiv.appendChild(returnValueSpan);
+
+            // --- 2. 盈利 (Profit) ---
+            const profitDiv = document.createElement('div');
+            profitDiv.className = 'detail-line';
+            const profitLabel = document.createElement('span');
+            profitLabel.className = 'detail-label';
+            profitLabel.textContent = '盈利';
+            const profitValueSpan = createValueSpan(profit, false);
+            profitValueSpan.classList.add('detail-value');
+            profitDiv.append(profitLabel, profitValueSpan);
+            itemDiv.appendChild(profitDiv);
+
+            // --- 3. 增值 (Growth) ---
+            const growthDiv = document.createElement('div');
+            growthDiv.className = 'detail-line';
+            const growthLabel = document.createElement('span');
+            growthLabel.className = 'detail-label';
+            growthLabel.textContent = '增值';
+            const growthValueSpan = createValueSpan(growth, false);
+            growthValueSpan.classList.add('detail-value');
+            growthDiv.append(growthLabel, growthValueSpan);
+            itemDiv.appendChild(growthDiv);
+
+            returnsDisplayContainer.appendChild(itemDiv);
+        });
+
+    } catch (error) {
+        console.error('加载收益率数据失败:', error);
+        returnsDisplayContainer.innerHTML = `<p style="font-size: 14px; color: #d73a49;">收益率加载失败</p>`;
+    }
+}
+
+
 async function loadInitialSummary() {
     const csvUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/portfolio_details_history.csv`;
     const valueChartUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/portfolio_value_chart.png`;
     const pieChartUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/portfolio_pie_chart.png`;
 
-    const totalValueDisplay = document.getElementById('total-value-display');
     const valueChartImg = document.getElementById('value-chart-img');
     const pieChartImg = document.getElementById('pie-chart-img');
     const lastUpdatedTime = document.getElementById('last-updated-time');
@@ -369,6 +534,9 @@ async function loadInitialSummary() {
     const timestamp = new Date().getTime();
     valueChartImg.src = `${valueChartUrl}?t=${timestamp}`;
     pieChartImg.src = `${pieChartUrl}?t=${timestamp}`;
+
+    // 同时加载收益率数据
+    loadReturnsData();
 
     try {
         const response = await fetch(`${csvUrl}?t=${timestamp}`);
@@ -399,6 +567,8 @@ async function loadInitialSummary() {
         totalValueDisplay.style.color = 'red';
     }
 }
+// ========================================================
+
 
 function createOptionRowUI(ticker = '', date = '', strike = '', type = 'CALL', quantity = '') {
     const itemDiv = document.createElement('div');
