@@ -1,38 +1,38 @@
 [
   {
     "period": "上一交易日",
-    "return": 0.020047410616781836,
-    "profit": 2258.0,
-    "growth": 2258.0
+    "return": 0.0,
+    "profit": NaN,
+    "growth": NaN
   },
   {
     "period": "本周至今",
     "return": -0.001277838627236294,
-    "profit": -147.0,
-    "growth": -147.0
+    "profit": NaN,
+    "growth": NaN
   },
   {
     "period": "本月至今",
     "return": -0.021754515601739022,
-    "profit": -2554.970388181857,
-    "growth": -2555.0
+    "profit": NaN,
+    "growth": NaN
   },
   {
     "period": "本年至今",
     "return": -0.03397818731223423,
-    "profit": 4706.077932003405,
-    "growth": 69919.0
+    "profit": NaN,
+    "growth": NaN
   },
   {
     "period": "过去30个交易日",
-    "return": 0.031884204027610163,
-    "profit": 3550.029611818143,
-    "growth": 3550.0
+    "return": 0.03459751245520559,
+    "profit": NaN,
+    "growth": NaN
   },
   {
     "period": "过去250个交易日",
     "return": -0.012862236759959345,
-    "profit": 5668.077932003405,
-    "growth": 70881.0
+    "profit": NaN,
+    "growth": NaN
   }
 ]
