@@ -1,82 +1,82 @@
 {
-  "analysis_date": "2026-11-03T22:17:44.172873",
+  "analysis_date": "2026-11-04T22:17:48.152566",
   "portfolio_returns": {
     "ASML": {
-      "current_price": 1552.14,
-      "total_value": 145967.28,
+      "current_price": 1496.3,
+      "total_value": 140715.94,
       "asset_type": "stock",
       "returns": {
-        "previous_trading_day": 1.7,
-        "week_to_date": -0.88,
-        "month_to_date": -0.88,
-        "year_to_date": 45.97,
-        "past_30_trading_days": -7.48,
-        "past_250_trading_days": 46.38
+        "previous_trading_day": -3.6,
+        "week_to_date": -4.44,
+        "month_to_date": -4.44,
+        "year_to_date": 40.72,
+        "past_30_trading_days": -10.81,
+        "past_250_trading_days": 46.14
       }
     },
     "GOOGL": {
-      "current_price": 280.03,
-      "total_value": 316610.32,
+      "current_price": 288.93,
+      "total_value": 326672.93,
       "asset_type": "stock",
       "returns": {
-        "previous_trading_day": 0.37,
-        "week_to_date": 0.07,
-        "month_to_date": 0.07,
-        "year_to_date": -10.36,
-        "past_30_trading_days": -19.89,
-        "past_250_trading_days": -1.04
+        "previous_trading_day": 3.18,
+        "week_to_date": 3.25,
+        "month_to_date": 3.25,
+        "year_to_date": -7.51,
+        "past_30_trading_days": -17.34,
+        "past_250_trading_days": 4.37
       }
     },
     "ISRG": {
-      "current_price": 440.75,
-      "total_value": 88150.0,
+      "current_price": 482.1,
+      "total_value": 96420.0,
       "asset_type": "stock",
       "returns": {
-        "previous_trading_day": 0.89,
-        "week_to_date": 2.02,
-        "month_to_date": 2.02,
-        "year_to_date": -22.18,
-        "past_30_trading_days": 12.06,
-        "past_250_trading_days": -19.01
+        "previous_trading_day": 9.38,
+        "week_to_date": 11.59,
+        "month_to_date": 11.59,
+        "year_to_date": -14.88,
+        "past_30_trading_days": 22.57,
+        "past_250_trading_days": -10.53
       }
     },
     "NVDA": {
-      "current_price": 206.69,
-      "total_value": 81372.82,
+      "current_price": 200.13,
+      "total_value": 78790.18,
       "asset_type": "stock",
       "returns": {
-        "previous_trading_day": 2.29,
-        "week_to_date": 1.0,
-        "month_to_date": 1.0,
-        "year_to_date": 11.09,
-        "past_30_trading_days": -7.01,
-        "past_250_trading_days": 0.15
+        "previous_trading_day": -3.17,
+        "week_to_date": -2.2,
+        "month_to_date": -2.2,
+        "year_to_date": 7.56,
+        "past_30_trading_days": -9.96,
+        "past_250_trading_days": 0.97
       }
     },
     "V": {
-      "current_price": 420.42,
-      "total_value": 62972.61,
+      "current_price": 436.57,
+      "total_value": 65391.64,
       "asset_type": "stock",
       "returns": {
-        "previous_trading_day": -1.2,
-        "week_to_date": 1.65,
-        "month_to_date": 1.65,
-        "year_to_date": 20.6,
-        "past_30_trading_days": 14.15,
-        "past_250_trading_days": 25.79
+        "previous_trading_day": 3.84,
+        "week_to_date": 5.56,
+        "month_to_date": 5.56,
+        "year_to_date": 25.23,
+        "past_30_trading_days": 18.54,
+        "past_250_trading_days": 29.32
       }
     },
     "VOO": {
-      "current_price": 693.54,
-      "total_value": 92654.17,
+      "current_price": 704.78,
+      "total_value": 94155.79,
       "asset_type": "stock",
       "returns": {
-        "previous_trading_day": 0.32,
-        "week_to_date": -0.18,
-        "month_to_date": -0.18,
-        "year_to_date": 11.55,
-        "past_30_trading_days": -0.92,
-        "past_250_trading_days": 11.66
+        "previous_trading_day": 1.62,
+        "week_to_date": 1.43,
+        "month_to_date": 1.43,
+        "year_to_date": 13.36,
+        "past_30_trading_days": 0.69,
+        "past_250_trading_days": 14.8
       }
     }
   }
