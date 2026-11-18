@@ -1,5 +1,5 @@
 {
-  "analysis_date": "2026-11-17T04:28:46.505932",
+  "analysis_date": "2026-11-18T03:42:39.911145",
   "portfolio_returns": {
     "CASH": {
       "current_price": 1.0,
@@ -19,38 +19,38 @@
       "total_value": 19800.0,
       "asset_type": "option",
       "returns": {
-        "previous_trading_day": -3.79,
+        "previous_trading_day": 0.0,
         "week_to_date": -3.79,
         "month_to_date": -1.25,
         "year_to_date": null,
         "past_30_trading_days": -0.5,
-        "past_250_trading_days": -3.94
+        "past_250_trading_days": null
       }
     },
     "NVDA_2027-06-17_145_CALL": {
-      "current_price": 29.94,
-      "total_value": 5988.0,
+      "current_price": 29.7,
+      "total_value": 5940.0,
       "asset_type": "option",
       "returns": {
-        "previous_trading_day": -14.29,
-        "week_to_date": -14.29,
-        "month_to_date": -54.53,
-        "year_to_date": -55.84,
-        "past_30_trading_days": -68.96,
-        "past_250_trading_days": -58.76
+        "previous_trading_day": -0.8,
+        "week_to_date": -14.97,
+        "month_to_date": -54.9,
+        "year_to_date": -56.19,
+        "past_30_trading_days": -69.21,
+        "past_250_trading_days": -56.4
       }
     },
     "TSLA": {
-      "current_price": 379.74,
-      "total_value": 37974.0,
+      "current_price": 380.11,
+      "total_value": 38011.0,
       "asset_type": "stock",
       "returns": {
-        "previous_trading_day": -2.69,
-        "week_to_date": -2.69,
-        "month_to_date": -5.02,
-        "year_to_date": -15.56,
-        "past_30_trading_days": 2.47,
-        "past_250_trading_days": -6.09
+        "previous_trading_day": 0.1,
+        "week_to_date": -2.59,
+        "month_to_date": -4.93,
+        "year_to_date": -15.48,
+        "past_30_trading_days": 2.57,
+        "past_250_trading_days": -7.05
       }
     }
   }
