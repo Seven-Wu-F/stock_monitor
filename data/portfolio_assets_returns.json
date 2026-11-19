@@ -1,5 +1,5 @@
 {
-  "analysis_date": "2026-11-18T03:42:39.911145",
+  "analysis_date": "2026-11-19T03:23:33.544811",
   "portfolio_returns": {
     "CASH": {
       "current_price": 1.0,
@@ -15,42 +15,42 @@
       }
     },
     "MSFT_2027-06-17_330_CALL": {
-      "current_price": 198.0,
-      "total_value": 19800.0,
+      "current_price": 183.43,
+      "total_value": 18343.0,
       "asset_type": "option",
       "returns": {
-        "previous_trading_day": 0.0,
-        "week_to_date": -3.79,
-        "month_to_date": -1.25,
+        "previous_trading_day": -7.36,
+        "week_to_date": -10.87,
+        "month_to_date": -8.51,
         "year_to_date": null,
-        "past_30_trading_days": -0.5,
+        "past_30_trading_days": -7.82,
         "past_250_trading_days": null
       }
     },
     "NVDA_2027-06-17_145_CALL": {
-      "current_price": 29.7,
-      "total_value": 5940.0,
+      "current_price": 25.95,
+      "total_value": 5190.0,
       "asset_type": "option",
       "returns": {
-        "previous_trading_day": -0.8,
-        "week_to_date": -14.97,
-        "month_to_date": -54.9,
-        "year_to_date": -56.19,
-        "past_30_trading_days": -69.21,
-        "past_250_trading_days": -56.4
+        "previous_trading_day": -12.63,
+        "week_to_date": -25.71,
+        "month_to_date": -60.59,
+        "year_to_date": -61.73,
+        "past_30_trading_days": -73.09,
+        "past_250_trading_days": -61.5
       }
     },
     "TSLA": {
-      "current_price": 380.11,
-      "total_value": 38011.0,
+      "current_price": 383.72,
+      "total_value": 38372.0,
       "asset_type": "stock",
       "returns": {
-        "previous_trading_day": 0.1,
-        "week_to_date": -2.59,
-        "month_to_date": -4.93,
-        "year_to_date": -15.48,
-        "past_30_trading_days": 2.57,
-        "past_250_trading_days": -7.05
+        "previous_trading_day": 0.95,
+        "week_to_date": -1.67,
+        "month_to_date": -4.02,
+        "year_to_date": -14.68,
+        "past_30_trading_days": 3.54,
+        "past_250_trading_days": -4.37
       }
     }
   }
